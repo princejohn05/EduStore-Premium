@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduStore Pro - Educational Resource Marketplace</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-full flex flex-col">
+
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('store')">
+                <div class="bg-brand-600 text-white p-2.5 rounded-xl shadow-md flex items-center justify-center">
+                    <i class="fa-solid fa-graduation-cap text-xl"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-brand-600 to-indigo-800 bg-clip-text text-transparent">EduStore Pro</span>
+                    <span class="block text-xs text-gray-500 font-medium">Learning Materials & ILAW Plans</span>
+                </div>
+            </div>
+
+            <!-- Navigation Actions -->
+            <div class="flex items-center space-x-3 sm:space-x-4">
+                <button onclick="switchView('store')" id="navStoreBtn" class="px-3 py-2 text-sm font-medium rounded-lg text-brand-600 bg-brand-50 hover:bg-brand-100 transition-colors flex items-center space-x-1.5">
+                    <i class="fa-solid fa-store"></i>
+                    <span class="hidden sm:inline">Storefront</span>
+                </button>
+                <button onclick="openCartModal()" class="relative px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100 transition-colors flex items-center space-x-1.5">
+                    <i class="fa-solid fa-cart-shopping text-base"></i>
+                    <span class="hidden sm:inline">Cart</span>
+                    <span id="cartCountBadge" class="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-sm hidden">0</span>
+                </button>
+                <button onclick="openLibraryModal()" class="px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-100 transition-colors flex items-center space-x-1.5">
+                    <i class="fa-solid fa-box-archive"></i>
+                    <span class="hidden sm:inline">My Library</span>
+                </button>
+                <button onclick="openOwnerLoginModal()" class="px-3.5 py-2 text-sm font-semibold rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition-all shadow-sm flex items-center space-x-1.5">
+                    <i class="fa-solid fa-lock text-xs"></i>
+                    <span>Owner Portal</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- STORE VIEW -->
+        <div id="storeView" class="space-y-8">
+            <!-- Hero Banner -->
+            <div class="bg-gradient-to-r from-indigo-900 via-brand-700 to-brand-600 rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden">
+                <div class="absolute right-0 bottom-0 opacity-10 transform translate-x-10 translate-y-10 pointer-events-none">
+                    <i class="fa-solid fa-book-open text-9xl"></i>
+                </div>
+                <div class="max-w-2xl relative z-10 space-y-4">
+                    <span class="bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm">Premium Educational Resources</span>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Empower Your Teaching with Ready-to-Use Materials & ILAW Plans</h1>
+                    <p class="text-indigo-100 text-sm sm:text-base">Instantly download high-quality lesson plans, remedial reading modules, and subject-specific worksheets crafted by expert educators.</p>
+                    
+                    <!-- Search Bar -->
+                    <div class="pt-2 flex flex-col sm:flex-row gap-3">
+                        <div class="relative flex-grow">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-search"></i>
+                            </span>
+                            <input type="text" id="searchInput" oninput="filterProducts()" placeholder="Search resources, topics, ILAW plans..." class="w-full pl-10 pr-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-indigo-200 focus:outline-none focus:ring-2 focus:ring-white focus:bg-white/20 transition-all">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Filter Pills -->
+            <div class="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none" id="categoryContainer">
+                <button onclick="filterCategory('All')" data-category="All" class="category-pill px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all bg-brand-600 text-white shadow-sm">All Resources</button>
+                <button onclick="filterCategory('ILAW Plans')" data-category="ILAW Plans" class="category-pill px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all bg-white text-gray-600 hover:bg-gray-100 border border-gray-200">ILAW Plans</button>
+                <button onclick="filterCategory('English')" data-category="English" class="category-pill px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all bg-white text-gray-600 hover:bg-gray-100 border border-gray-200">English</button>
+                <button onclick="filterCategory('Math')" data-category="Math" class="category-pill px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all bg-white text-gray-600 hover:bg-gray-100 border border-gray-200">Math</button>
+                <button onclick="filterCategory('Filipino')" data-category="Filipino" class="category-pill px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all bg-white text-gray-600 hover:bg-gray-100 border border-gray-200">Filipino</button>
+                <button onclick="filterCategory('GMRC')" data-category="GMRC" class="category-pill px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all bg-white text-gray-600 hover:bg-gray-100 border border-gray-200">GMRC</button>
+                <button onclick="filterCategory('EPP')" data-category="EPP" class="category-pill px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all bg-white text-gray-600 hover:bg-gray-100 border border-gray-200">EPP</button>
+                <button onclick="filterCategory('Reading Remediation')" data-category="Reading Remediation" class="category-pill px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all bg-white text-gray-600 hover:bg-gray-100 border border-gray-200">Reading Remediation</button>
+                <button onclick="filterCategory('Short Stories')" data-category="Short Stories" class="category-pill px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all bg-white text-gray-600 hover:bg-gray-100 border border-gray-200">Short Stories</button>
+                <button onclick="filterCategory('Coloring Books')" data-category="Coloring Books" class="category-pill px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all bg-white text-gray-600 hover:bg-gray-100 border border-gray-200">Coloring Books</button>
+                <button onclick="filterCategory('PowerPoint Presentation')" data-category="PowerPoint Presentation" class="category-pill px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all bg-white text-gray-600 hover:bg-gray-100 border border-gray-200">PowerPoint Presentation</button>
+                <button onclick="filterCategory('Reviewers')" data-category="Reviewers" class="category-pill px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all bg-white text-gray-600 hover:bg-gray-100 border border-gray-200">Reviewers</button>
+                <button onclick="filterCategory('Others')" data-category="Others" class="category-pill px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all bg-white text-gray-600 hover:bg-gray-100 border border-gray-200">Others</button>
+            </div>
+
+            <!-- Product Grid -->
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-900" id="productGridTitle">Available Educational Materials</h2>
+                    <span id="productCount" class="text-sm text-gray-500 font-medium">0 items</span>
+                </div>
+                <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Dynamically populated products -->
+                </div>
+            </div>
+        </div>
+
+        <!-- OWNER DASHBOARD VIEW -->
+        <div id="ownerDashboardView" class="hidden space-y-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-purple-100 text-purple-700 text-xs font-bold px-2.5 py-1 rounded-full uppercase">Owner Mode Active</span>
+                    </div>
+                    <h1 class="text-2xl font-bold text-gray-900 mt-1">Resource & Store Management</h1>
+                    <p class="text-sm text-gray-500">Upload digital products, manage files, and approve GCash payments.</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button onclick="openProductModal()" class="px-4 py-2.5 bg-brand-600 text-white rounded-xl text-sm font-semibold hover:bg-brand-700 shadow-sm transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add New Resource</span>
+                    </button>
+                    <button onclick="logoutOwner()" class="px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Exit</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Stats -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Total Products</p>
+                            <h3 id="statTotalProducts" class="text-3xl font-extrabold text-gray-900 mt-1">0</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-indigo-50 text-brand-600 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-book"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Pending Orders</p>
+                            <h3 id="statPendingOrders" class="text-3xl font-extrabold text-amber-600 mt-1">0</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Approved Sales</p>
+                            <h3 id="statTotalRevenue" class="text-3xl font-extrabold text-emerald-600 mt-1">₱0.00</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-peso-sign"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs for Owner Dashboard -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="flex border-b border-gray-200 bg-gray-50 px-6 pt-4 space-x-6">
+                    <button onclick="switchOwnerTab('products')" id="ownerTabProductsBtn" class="pb-3 text-sm font-semibold text-brand-600 border-b-2 border-brand-600 transition-colors">Manage Products</button>
+                    <button onclick="switchOwnerTab('orders')" id="ownerTabOrdersBtn" class="pb-3 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">Customer Orders & Approvals</button>
+                </div>
+
+                <!-- Products Table Tab -->
+                <div id="ownerTabProductsContent" class="p-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-gray-200 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                    <th class="py-3 px-4">Resource Info</th>
+                                    <th class="py-3 px-4">Category</th>
+                                    <th class="py-3 px-4">Price</th>
+                                    <th class="py-3 px-4">File / Link</th>
+                                    <th class="py-3 px-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ownerProductTableBody" class="divide-y divide-gray-100 text-sm">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Orders Table Tab -->
+                <div id="ownerTabOrdersContent" class="p-6 hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-gray-200 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                    <th class="py-3 px-4">Order ID & Date</th>
+                                    <th class="py-3 px-4">Customer Details</th>
+                                    <th class="py-3 px-4">Items</th>
+                                    <th class="py-3 px-4">GCash Ref ID</th>
+                                    <th class="py-3 px-4">Status</th>
+                                    <th class="py-3 px-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ownerOrderTableBody" class="divide-y divide-gray-100 text-sm">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 mt-16 py-8 text-center text-sm text-gray-500">
+        <div class="max-w-7xl mx-auto px-4 space-y-2">
+            <p class="font-medium text-gray-700">EduStore Pro &copy; 2026. All rights reserved.</p>
+            <p class="text-xs text-gray-400">GCash Payments Verified to: <span class="font-semibold text-gray-600">JULIE ANN NICOLAS (09518945949)</span></p>
+        </div>
+    </footer>
+
+
+    <!-- Owner Login Modal -->
+    <div id="ownerLoginModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative space-y-6">
+            <div class="text-center space-y-2">
+                <div class="w-14 h-14 bg-gray-900 text-white rounded-2xl mx-auto flex items-center justify-center text-2xl shadow-md">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900">Owner Authorization</h3>
+                <p class="text-xs text-gray-500">Enter your secure passkey to access the owner dashboard.</p>
+            </div>
+            <form onsubmit="handleOwnerLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Passkey</label>
+                    <input type="password" id="ownerPasskeyInput" required placeholder="Enter secure passkey" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900 text-center tracking-widest text-lg font-mono">
+                </div>
+                <div id="ownerLoginError" class="text-xs text-rose-600 text-center font-medium hidden">Incorrect passkey. Access denied.</div>
+                <div class="flex space-x-3 pt-2">
+                    <button type="button" onclick="closeModal('ownerLoginModal')" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-colors">Cancel</button>
+                    <button type="submit" class="flex-1 py-3 bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-xl transition-colors shadow-sm">Authorize</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Product Add/Edit Modal -->
+    <div id="productModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative space-y-6 my-8">
+            <div class="flex items-center justify-between">
+                <h3 id="productModalTitle" class="text-xl font-bold text-gray-900">Add New Resource</h3>
+                <button onclick="closeModal('productModal')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="productForm" onsubmit="saveProduct(event)" class="space-y-4">
+                <input type="hidden" id="editProductId">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Resource Title</label>
+                    <input type="text" id="prodTitle" required placeholder="e.g. Grade 4 ILAW Detailed Lesson Plan in Mathematics" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-600">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Category</label>
+                        <select id="prodCategory" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-600 bg-white">
+                            <option value="ILAW Plans">ILAW Plans</option>
+                            <option value="English">English</option>
+                            <option value="Math">Math</option>
+                            <option value="Filipino">Filipino</option>
+                            <option value="GMRC">GMRC</option>
+                            <option value="EPP">EPP</option>
+                            <option value="Reading Remediation">Reading Remediation</option>
+                            <option value="Short Stories">Short Stories</option>
+                            <option value="Coloring Books">Coloring Books</option>
+                            <option value="PowerPoint Presentation">PowerPoint Presentation</option>
+                            <option value="Reviewers">Reviewers</option>
+                            <option value="Others">Others</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Price (₱)</label>
+                        <input type="number" step="0.01" min="0" id="prodPrice" required placeholder="150.00" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-600">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Description</label>
+                    <textarea id="prodDescription" rows="3" required placeholder="Detailed overview of what is included in this resource package..." class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-600"></textarea>
+                </div>
+                <div class="border-t border-gray-200 pt-4 space-y-4">
+                    <h4 class="text-sm font-bold text-gray-900 flex items-center space-x-2">
+                        <i class="fa-solid fa-cloud-arrow-up text-brand-600"></i>
+                        <span>Digital Downloadable Content</span>
+                    </h4>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Option A: Upload Digital File (PDF, DOCX, ZIP)</label>
+                        <input type="file" id="prodFileInput" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer">
+                        <p class="text-[11px] text-gray-400 mt-1">Files uploaded will be securely saved in browser storage for instant customer download upon order approval.</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Option B: OR Cloud Link (Google Drive / Dropbox)</label>
+                        <input type="url" id="prodDownloadLink" placeholder="https://drive.google.com/..." class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-600 text-sm">
+                    </div>
+                </div>
+                <div class="flex space-x-3 pt-4">
+                    <button type="button" onclick="closeModal('productModal')" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-colors">Cancel</button>
+                    <button type="submit" class="flex-1 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-colors shadow-sm">Save Resource</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Product Details Modal -->
+    <div id="productDetailModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative space-y-6">
+            <div class="flex items-center justify-between">
+                <span id="detailCategoryBadge" class="bg-brand-50 text-brand-700 text-xs font-bold px-3 py-1 rounded-full uppercase">Category</span>
+                <button onclick="closeModal('productDetailModal')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="space-y-3">
+                <h3 id="detailTitle" class="text-2xl font-bold text-gray-900"></h3>
+                <p id="detailPrice" class="text-2xl font-extrabold text-brand-600"></p>
+                <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Description</h4>
+                    <p id="detailDescription" class="text-sm text-gray-600 leading-relaxed"></p>
+                </div>
+            </div>
+            <div class="flex space-x-3 pt-2">
+                <button onclick="addCurrentDetailToCart()" class="flex-1 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold rounded-xl transition-colors flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-cart-plus"></i>
+                    <span>Add to Cart</span>
+                </button>
+                <button onclick="buyCurrentDetailNow()" class="flex-1 py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-colors shadow-sm flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Buy Now</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart / Checkout Modal -->
+    <div id="cartModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative space-y-6 my-8">
+            <div class="flex items-center justify-between border-b border-gray-200 pb-4">
+                <h3 class="text-xl font-bold text-gray-900 flex items-center space-x-2">
+                    <i class="fa-solid fa-cart-shopping text-brand-600"></i>
+                    <span>Shopping Cart & Secure Checkout</span>
+                </h3>
+                <button onclick="closeModal('cartModal')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <div id="cartItemsContainer" class="space-y-4 max-h-60 overflow-y-auto pr-1">
+                <!-- Cart items list -->
+            </div>
+
+            <div class="border-t border-gray-200 pt-4 space-y-4">
+                <div class="flex justify-between items-center text-lg font-bold">
+                    <span>Total Amount:</span>
+                    <span id="cartTotalDisplay" class="text-brand-600">₱0.00</span>
+                </div>
+
+                <!-- GCash Payment Box -->
+                <div class="bg-indigo-50/50 border border-indigo-100 p-5 rounded-2xl space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-blue-600 text-white font-bold rounded-xl flex items-center justify-center text-sm shadow-sm">GC</div>
+                        <div>
+                            <h4 class="text-sm font-bold text-gray-900">GCash Instant Payment</h4>
+                            <p class="text-xs text-gray-500">Scan QR or send payment to the official account below.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-indigo-100 flex flex-col sm:flex-row items-center gap-4">
+                        <div class="w-32 h-32 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200 overflow-hidden shrink-0">
+                            <!-- Embedded GCash QR Placeholder / Visual -->
+                            <div class="text-center p-2">
+                                <i class="fa-solid fa-qrcode text-4xl text-blue-600 mb-1"></i>
+                                <span class="block text-[10px] font-bold text-gray-600">GCASH QR</span>
+                            </div>
+                        </div>
+                        <div class="space-y-1 text-sm w-full">
+                            <p class="text-xs text-gray-500 uppercase font-semibold">Account Name</p>
+                            <p class="font-extrabold text-gray-900">JULIE ANN NICOLAS</p>
+                            <p class="text-xs text-gray-500 uppercase font-semibold pt-2">GCash Number</p>
+                            <p class="font-extrabold text-blue-600 font-mono text-base">09518945949</p>
+                        </div>
+                    </div>
+
+                    <form id="checkoutForm" onsubmit="submitOrder(event)" class="space-y-3 pt-2">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Your Full Name</label>
+                                <input type="text" id="buyerName" required placeholder="e.g. Maria Santos" class="w-full px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-600 text-sm bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Your Email / Phone</label>
+                                <input type="text" id="buyerContact" required placeholder="maria@gmail.com" class="w-full px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-600 text-sm bg-white">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">GCash Reference ID (13-digit)</label>
+                            <input type="text" id="buyerGcashRef" required placeholder="e.g. 1029384756483" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-600 text-sm font-mono bg-white">
+                        </div>
+                        <button type="submit" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors shadow-md flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Submit Payment & Place Order</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Library Modal -->
+    <div id="libraryModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative space-y-6">
+            <div class="flex items-center justify-between border-b border-gray-200 pb-4">
+                <h3 class="text-xl font-bold text-gray-900 flex items-center space-x-2">
+                    <i class="fa-solid fa-box-archive text-brand-600"></i>
+                    <span>My Purchased Resources & Downloads</span>
+                </h3>
+                <button onclick="closeModal('libraryModal')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Enter your Email or Name to look up your library</label>
+                    <div class="flex space-x-2">
+                        <input type="text" id="libraryLookupInput" placeholder="Enter your registered name or email" class="flex-grow px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-600 text-sm">
+                        <button onclick="loadUserLibrary()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-sm transition-colors shadow-sm">Search</button>
+                    </div>
+                </div>
+
+                <div id="libraryResultsContainer" class="space-y-3 max-h-72 overflow-y-auto pr-1">
+                    <div class="text-center py-8 text-gray-400 text-sm">Search with your name or email above to view your approved downloads.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initial Mock Data & State Management
+        let products = JSON.parse(localStorage.getItem('edustore_products')) || [
+            {
+                id: 'prod-1',
+                title: 'Grade 3 ILAW Detailed Lesson Plan in Mathematics - Quarter 1',
+                category: 'ILAW Plans',
+                price: 199.00,
+                description: 'Complete with learning competencies, engaging activities, formative assessments, and teacher scripts following the ILAW pedagogical framework.',
+                fileData: null,
+                fileName: 'Grade3_Math_ILAW_Q1.pdf',
+                downloadLink: 'https://drive.google.com/sample-math-ilaw'
+            },
+            {
+                id: 'prod-2',
+                title: 'Reading Remediation Toolkit for Key Stage 1 (Phonics & Sight Words)',
+                category: 'Reading Remediation',
+                price: 249.00,
+                description: 'Comprehensive intervention worksheets, flashcards, and progress tracking sheets designed for struggling non-readers.',
+                fileData: null,
+                fileName: 'Reading_Remediation_Toolkit.pdf',
+                downloadLink: 'https://drive.google.com/sample-reading-toolkit'
+            },
+            {
+                id: 'prod-3',
+                title: 'GMRC Grade 4 Values Integration Activity Sheets',
+                category: 'GMRC',
+                price: 149.00,
+                description: 'Values-based situational analysis tasks and reflective journaling prompts aligned with the Matatag curriculum.',
+                fileData: null,
+                fileName: 'GMRC_Grade4_Worksheets.docx',
+                downloadLink: 'https://drive.google.com/sample-gmrc'
+            }
+        ];
+
+        let orders = JSON.parse(localStorage.getItem('edustore_orders')) || [];
+        let cart = [];
+        let currentCategory = 'All';
+        let currentDetailProduct = null;
+        const correctPasskey = '0705';
+
+        // Save state to localStorage
+        function saveData() {
+            localStorage.setItem('edustore_products', JSON.stringify(products));
+            localStorage.setItem('edustore_orders', JSON.stringify(orders));
+        }
+
+        // Initialization on Load
+        window.onload = function() {
+            renderProducts();
+            updateCartBadge();
+        };
+
+        // View Switching
+        function switchView(viewName) {
+            const storeView = document.getElementById('storeView');
+            const ownerView = document.getElementById('ownerDashboardView');
+            if (viewName === 'store') {
+                storeView.classList.remove('hidden');
+                ownerView.classList.add('hidden');
+                renderProducts();
+            } else if (viewName === 'owner') {
+                storeView.classList.add('hidden');
+                ownerView.classList.remove('hidden');
+                renderOwnerDashboard();
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Category Filtering
+        function filterCategory(category) {
+            currentCategory = category;
+            document.querySelectorAll('.category-pill').forEach(btn => {
+                if(btn.getAttribute('data-category') === category) {
+                    btn.className = "category-pill px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all bg-brand-600 text-white shadow-sm";
+                } else {
+                    btn.className = "category-pill px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all bg-white text-gray-600 hover:bg-gray-100 border border-gray-200";
+                }
+            });
+            renderProducts();
+        }
+
+        // Render Storefront Products
+        function renderProducts() {
+            const grid = document.getElementById('productGrid');
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            
+            let filtered = products.filter(p => {
+                const matchesCat = currentCategory === 'All' || p.category === currentCategory;
+                const matchesSearch = p.title.toLowerCase().includes(searchVal) || p.description.toLowerCase().includes(searchVal);
+                return matchesCat && matchesSearch;
+            });
+
+            const countEl = document.getElementById('productCount');
+            if(countEl) {
+                countEl.innerText = `${filtered.length} items`;
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-16 text-center space-y-3 bg-white rounded-3xl border border-gray-200">
+                        <i class="fa-solid fa-folder-open text-4xl text-gray-300"></i>
+                        <p class="text-gray-500 font-medium">No educational resources found.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(p => `
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="bg-brand-50 text-brand-700 text-xs font-bold px-2.5 py-1 rounded-full uppercase">${p.category}</span>
+                            <span class="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md"><i class="fa-solid fa-cloud-arrow-down mr-1"></i> Instant Download</span>
+                        </div>
+                        <h3 onclick="openProductDetail('${p.id}')" class="font-bold text-gray-900 text-lg hover:text-brand-600 cursor-pointer line-clamp-2">${p.title}</h3>
+                        <p class="text-sm text-gray-500 line-clamp-2">${p.description}</p>
+                    </div>
+                    <div class="pt-4 border-t border-gray-100 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-gray-400 block font-medium">Price</span>
+                            <span class="text-xl font-extrabold text-brand-600">₱${p.price.toFixed(2)}</span>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="addToCart('${p.id}')" class="p-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors" title="Add to Cart">
+                                <i class="fa-solid fa-cart-plus"></i>
+                            </button>
+                            <button onclick="buyNow('${p.id}')" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-sm transition-colors shadow-sm">
+                                Buy Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Product Detail Modal
+        function openProductDetail(id) {
+            currentDetailProduct = products.find(p => p.id === id);
+            if (!currentDetailProduct) return;
+
+            document.getElementById('detailCategoryBadge').innerText = currentDetailProduct.category;
+            document.getElementById('detailTitle').innerText = currentDetailProduct.title;
+            document.getElementById('detailPrice').innerText = `₱${currentDetailProduct.price.toFixed(2)}`;
+            document.getElementById('detailDescription').innerText = currentDetailProduct.description;
+
+            document.getElementById('productDetailModal').classList.remove('hidden');
+            document.getElementById('productDetailModal').classList.add('flex');
+        }
+
+        function addCurrentDetailToCart() {
+            if (currentDetailProduct) {
+                addToCart(currentDetailProduct.id);
+                closeModal('productDetailModal');
+            }
+        }
+
+        function buyCurrentDetailNow() {
+            if (currentDetailProduct) {
+                cart = [{ ...currentDetailProduct, quantity: 1 }];
+                updateCartBadge();
+                closeModal('productDetailModal');
+                openCartModal();
+            }
+        }
+
+        // Cart Management
+        function addToCart(id) {
+            const prod = products.find(p => p.id === id);
+            if (!prod) return;
+            const existing = cart.find(item => item.id === id);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ ...prod, quantity: 1 });
+            }
+            updateCartBadge();
+            showNotification(`Added "${prod.title}" to cart!`);
+        }
+
+        function updateCartBadge() {
+            const badge = document.getElementById('cartCountBadge');
+            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            if (totalCount > 0) {
+                badge.innerText = totalCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function openCartModal() {
+            renderCartItems();
+            document.getElementById('cartModal').classList.remove('hidden');
+            document.getElementById('cartModal').classList.add('flex');
+        }
+
+        function renderCartItems() {
+            const container = document.getElementById('cartItemsContainer');
+            const totalDisplay = document.getElementById('cartTotalDisplay');
+
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="text-center py-6 text-gray-400 text-sm">Your cart is currently empty.</div>`;
+                totalDisplay.innerText = '₱0.00';
+                return;
+            }
+
+            let total = 0;
+            container.innerHTML = cart.map(item => {
+                const subtotal = item.price * item.quantity;
+                total += subtotal;
+                return `
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-2xl border border-gray-100 text-sm">
+                        <div class="space-y-0.5 max-w-[240px] sm:max-w-xs">
+                            <h4 class="font-bold text-gray-900 truncate">${item.title}</h4>
+                            <p class="text-xs text-gray-500">₱${item.price.toFixed(2)} each</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span class="font-semibold text-gray-700">₱${subtotal.toFixed(2)}</span>
+                            <button onclick="removeFromCart('${item.id}')" class="text-rose-500 hover:text-rose-700"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            totalDisplay.innerText = `₱${total.toFixed(2)}`;
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            updateCartBadge();
+            renderCartItems();
+        }
+
+        function buyNow(id) {
+            const prod = products.find(p => p.id === id);
+            if (!prod) return;
+            cart = [{ ...prod, quantity: 1 }];
+            updateCartBadge();
+            openCartModal();
+        }
+
+        // Checkout & Order Submission
+        function submitOrder(e) {
+            e.preventDefault();
+            if (cart.length === 0) {
+                alert('Your cart is empty.');
+                return;
+            }
+
+            const name = document.getElementById('buyerName').value.trim();
+            const contact = document.getElementById('buyerContact').value.trim();
+            const gcashRef = document.getElementById('buyerGcashRef').value.trim();
+
+            if (gcashRef.length < 10) {
+                alert('Please enter a valid GCash Reference ID.');
+                return;
+            }
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            const newOrder = {
+                id: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
+                date: new Date().toLocaleString(),
+                name: name,
+                contact: contact,
+                gcashRef: gcashRef,
+                items: [...cart],
+                total: total,
+                status: 'Pending'
+            };
+
+            orders.unshift(newOrder);
+            saveData();
+
+            cart = [];
+            updateCartBadge();
+            closeModal('cartModal');
+            
+            alert(`Order submitted successfully! Your Order ID is ${newOrder.id}. Once the owner verifies your GCash payment to JULIE ANN NICOLAS (09518945949), your downloads will be activated.`);
+            document.getElementById('checkoutForm').reset();
+        }
+
+        // Owner Authentication
+        function openOwnerLoginModal() {
+            document.getElementById('ownerLoginError').classList.add('hidden');
+            document.getElementById('ownerPasskeyInput').value = '';
+            document.getElementById('ownerLoginModal').classList.remove('hidden');
+            document.getElementById('ownerLoginModal').classList.add('flex');
+        }
+
+        function handleOwnerLogin(e) {
+            e.preventDefault();
+            const passkey = document.getElementById('ownerPasskeyInput').value;
+            if (passkey === correctPasskey) {
+                closeModal('ownerLoginModal');
+                switchView('owner');
+            } else {
+                document.getElementById('ownerLoginError').classList.remove('hidden');
+            }
+        }
+
+        function logoutOwner() {
+            switchView('store');
+        }
+
+        // Owner Dashboard Rendering & Management
+        let currentOwnerTab = 'products';
+        function switchOwnerTab(tab) {
+            currentOwnerTab = tab;
+            const prodBtn = document.getElementById('ownerTabProductsBtn');
+            const ordBtn = document.getElementById('ownerTabOrdersBtn');
+            const prodContent = document.getElementById('ownerTabProductsContent');
+            const ordContent = document.getElementById('ownerTabOrdersContent');
+
+            if (tab === 'products') {
+                prodBtn.className = "pb-3 text-sm font-semibold text-brand-600 border-b-2 border-brand-600 transition-colors";
+                ordBtn.className = "pb-3 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors";
+                prodContent.classList.remove('hidden');
+                ordContent.classList.add('hidden');
+            } else {
+                ordBtn.className = "pb-3 text-sm font-semibold text-brand-600 border-b-2 border-brand-600 transition-colors";
+                prodBtn.className = "pb-3 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors";
+                ordContent.classList.remove('hidden');
+                prodContent.classList.add('hidden');
+            }
+            renderOwnerDashboard();
+        }
+
+        function renderOwnerDashboard() {
+            document.getElementById('statTotalProducts').innerText = products.length;
+            const pendingCount = orders.filter(o => o.status === 'Pending').length;
+            document.getElementById('statPendingOrders').innerText = pendingCount;
+            const approvedRevenue = orders.filter(o => o.status === 'Approved').reduce((sum, o) => sum + o.total, 0);
+            document.getElementById('statTotalRevenue').innerText = `₱${approvedRevenue.toFixed(2)}`;
+
+            const prodTable = document.getElementById('ownerProductTableBody');
+            if (products.length === 0) {
+                prodTable.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-400">No products listed.</td></tr>`;
+            } else {
+                prodTable.innerHTML = products.map(p => `
+                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                        <td class="py-4 px-4 font-semibold text-gray-900 max-w-xs truncate">${p.title}</td>
+                        <td class="py-4 px-4 text-gray-600"><span class="bg-gray-100 px-2.5 py-1 rounded-md text-xs font-semibold">${p.category}</span></td>
+                        <td class="py-4 px-4 font-bold text-brand-600">₱${p.price.toFixed(2)}</td>
+                        <td class="py-4 px-4 text-xs text-gray-500">${p.fileData ? '<span class="text-emerald-600 font-semibold"><i class="fa-solid fa-file-arrow-up"></i> Uploaded File</span>' : (p.downloadLink ? '<a href="'+p.downloadLink+'" target="_blank" class="text-indigo-600 underline">Cloud Link</a>' : 'No File')}</td>
+                        <td class="py-4 px-4 text-right space-x-2">
+                            <button onclick="editProduct('${p.id}')" class="p-2 bg-indigo-50 text-brand-600 rounded-lg hover:bg-indigo-100"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteProduct('${p.id}')" class="p-2 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            const ordTable = document.getElementById('ownerOrderTableBody');
+            if (orders.length === 0) {
+                ordTable.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-gray-400">No customer orders yet.</td></tr>`;
+            } else {
+                ordTable.innerHTML = orders.map(o => `
+                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                        <td class="py-4 px-4">
+                            <span class="font-bold text-gray-900 block">${o.id}</span>
+                            <span class="text-xs text-gray-400">${o.date}</span>
+                        </td>
+                        <td class="py-4 px-4">
+                            <span class="font-semibold text-gray-900 block">${o.name}</span>
+                            <span class="text-xs text-gray-500">${o.contact}</span>
+                        </td>
+                        <td class="py-4 px-4 text-xs text-gray-600">
+                            ${o.items.map(i => `${i.quantity}x${i.title}`).join('<br>')}
+                        </td>
+                        <td class="py-4 px-4 font-mono font-bold text-blue-600">${o.gcashRef}</td>
+                        <td class="py-4 px-4">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${o.status === 'Approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${o.status}</span>
+                        </td>
+                        <td class="py-4 px-4 text-right space-x-2">
+                            ${o.status === 'Pending' ? `
+                                <button onclick="approveOrder('${o.id}')" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700">Approve</button>
+                            ` : `
+                                <span class="text-xs text-emerald-600 font-semibold"><i class="fa-solid fa-check-circle"></i> Verified</span>
+                            `}
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // Add / Edit Product Modal triggers
+        function openProductModal(productId = null) {
+            document.getElementById('productForm').reset();
+            document.getElementById('editProductId').value = '';
+            if (productId) {
+                const p = products.find(item => item.id === productId);
+                if (p) {
+                    document.getElementById('productModalTitle').innerText = 'Edit Resource';
+                    document.getElementById('editProductId').value = p.id;
+                    document.getElementById('prodTitle').value = p.title;
+                    document.getElementById('prodCategory').value = p.category;
+                    document.getElementById('prodPrice').value = p.price;
+                    document.getElementById('prodDescription').value = p.description;
+                    document.getElementById('prodDownloadLink').value = p.downloadLink || '';
+                }
+            } else {
+                document.getElementById('productModalTitle').innerText = 'Add New Resource';
+            }
+            document.getElementById('productModal').classList.remove('hidden');
+            document.getElementById('productModal').classList.add('flex');
+        }
+
+        function editProduct(id) {
+            openProductModal(id);
+        }
+
+        function deleteProduct(id) {
+            if (confirm('Are you sure you want to delete this resource?')) {
+                products = products.filter(p => p.id !== id);
+                saveData();
+                renderOwnerDashboard();
+            }
+        }
+
+        function saveProduct(e) {
+            e.preventDefault();
+            const editId = document.getElementById('editProductId').value;
+            const title = document.getElementById('prodTitle').value.trim();
+            const category = document.getElementById('prodCategory').value;
+            const price = parseFloat(document.getElementById('prodPrice').value);
+            const description = document.getElementById('prodDescription').value.trim();
+            const downloadLink = document.getElementById('prodDownloadLink').value.trim();
+            const fileInput = document.getElementById('prodFileInput');
+
+            const saveRecord = (fileData = null, fileName = null) => {
+                if (editId) {
+                    const p = products.find(item => item.id === editId);
+                    if (p) {
+                        p.title = title;
+                        p.category = category;
+                        p.price = price;
+                        p.description = description;
+                        p.downloadLink = downloadLink;
+                        if (fileData) {
+                            p.fileData = fileData;
+                            p.fileName = fileName;
+                        }
+                    }
+                } else {
+                    const newProd = {
+                        id: 'prod-' + Date.now(),
+                        title: title,
+                        category: category,
+                        price: price,
+                        description: description,
+                        downloadLink: downloadLink,
+                        fileData: fileData,
+                        fileName: fileName || 'resource_file'
+                    };
+                    products.push(newProd);
+                }
+                saveData();
+                closeModal('productModal');
+                renderOwnerDashboard();
+                renderProducts();
+            };
+
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function(uploadEvent) {
+                    saveRecord(uploadEvent.target.result, file.name);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                let existingFile = null;
+                let existingFileName = null;
+                if (editId) {
+                    const existing = products.find(item => item.id === editId);
+                    if (existing) {
+                        existingFile = existing.fileData;
+                        existingFileName = existing.fileName;
+                    }
+                }
+                saveRecord(existingFile, existingFileName);
+            }
+        }
+
+        function approveOrder(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = 'Approved';
+                saveData();
+                renderOwnerDashboard();
+            }
+        }
+
+        // Customer Library & Downloads
+        function openLibraryModal() {
+            document.getElementById('libraryLookupInput').value = '';
+            document.getElementById('libraryResultsContainer').innerHTML = `<div class="text-center py-8 text-gray-400 text-sm">Search with your name or email above to view your approved downloads.</div>`;
+            document.getElementById('libraryModal').classList.remove('hidden');
+            document.getElementById('libraryModal').classList.add('flex');
+        }
+
+        function loadUserLibrary() {
+            const query = document.getElementById('libraryLookupInput').value.trim().toLowerCase();
+            const container = document.getElementById('libraryResultsContainer');
+
+            if (!query) {
+                alert('Please enter your name or email.');
+                return;
+            }
+
+            const userOrders = orders.filter(o => 
+                o.status === 'Approved' && 
+                (o.name.toLowerCase().includes(query) || o.contact.toLowerCase().includes(query))
+            );
+
+            if (userOrders.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 space-y-2 bg-gray-50 rounded-2xl">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-500 text-2xl"></i>
+                        <p class="text-gray-700 font-semibold text-sm">No approved orders found for "${query}".</p>
+                        <p class="text-xs text-gray-400">Make sure your payment has been verified and approved by the owner.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            userOrders.forEach(ord => {
+                ord.items.forEach(item => {
+                    const productRef = products.find(p => p.id === item.id) || item;
+                    html += `
+                        <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">Order #${ord.id}</span>
+                                <h4 class="font-bold text-gray-900 text-sm">${productRef.title}</h4>
+                                <p class="text-xs text-gray-400">Purchased on ${ord.date}</p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                ${productRef.fileData ? `
+                                    <a href="${productRef.fileData}" download="${productRef.fileName || 'resource.pdf'}" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl text-xs transition-colors shadow-sm flex items-center space-x-1.5">
+                                        <i class="fa-solid fa-download"></i>
+                                        <span>Download File</span>
+                                    </a>
+                                ` : ''}
+                                ${productRef.downloadLink ? `
+                                    <a href="${productRef.downloadLink}" target="_blank" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs transition-colors shadow-sm flex items-center space-x-1.5">
+                                        <i class="fa-solid fa-external-link"></i>
+                                        <span>Cloud Link</span>
+                                    </a>
+                                ` : ''}
+                                ${!productRef.fileData && !productRef.downloadLink ? `
+                                    <span class="text-xs text-gray-400 font-medium">Link pending update</span>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+
+            container.innerHTML = html;
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('flex');
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function showNotification(msg) {
+            const div = document.createElement('div');
+            div.className = "fixed bottom-6 right-6 bg-gray-900 text-white px-5 py-3 rounded-2xl shadow-xl z-50 text-sm font-medium flex items-center space-x-2 animate-bounce";
+            div.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span>${msg}</span>`;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
